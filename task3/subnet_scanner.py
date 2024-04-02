@@ -46,16 +46,20 @@ class ICMP:
 
 # sniffer: used to capture all ICMP packets come to this host.
 def sniffer():
-    socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
-    socket.bind(("0.0.0.0", 0))
-    socket.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
+    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
+    s.bind(("0.0.0.0", 0))
+    s.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
 
     discovered_hosts = set([])
     try:
         while True:
-            raw_buffer = socket.recvfrom(1500)[0]
-
+            raw_buffer = s.recvfrom(1500)[0]
             #TODO: your code here
+            ip_header = IP(raw_buffer[0:20])
+            if ip_header.protocol == "ICMP":
+                icmp_message = ICMP(raw_buffer[20:28])
+                if icmp_message.type == 3:
+                    discovered_hosts.add(ip_header.src_address)
 
     except KeyboardInterrupt:
         print(f'\n\nSummary: Discovered Hosts')
@@ -68,6 +72,16 @@ def udp_sender(subnet):
     STRING="SCAN"
     PORT=19999
     #TODO: your code here
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    net = ipaddress.ip_network(subnet)
+    for i in net:
+        if i != net.broadcast_address and i != ipaddress.IPv4Network(subnet)[0]:
+            try:
+                s.sendto(STRING.encode(), (str(i), PORT))
+            except Exception as e:
+                print(f"Error: {e}")
+
+    s.close()
 
 if __name__ == '__main__':
        subnet = sys.argv[1]
