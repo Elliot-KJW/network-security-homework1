@@ -8,7 +8,6 @@ def port_scanner(target_ip, start_portno, end_portno):
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((target_ip, port_number))
-            s.send('hello'.encode())
             print(port_number, "is opened")
             s.close()
         except ConnectionRefusedError:
