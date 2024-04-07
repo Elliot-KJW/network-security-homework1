@@ -161,10 +161,10 @@ def parse_packet(packet, rule_set):
                           + rule.direction + " " + ip.dst + " "
                           )
 
-                print('options:')
+                '''print('options:')
                 for option, value in rule.options.items():
                     print(" " + f"{option}: {value}")
-                print("\n")
+                print("\n")'''
 
 
 if __name__ == '__main__':
